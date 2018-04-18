@@ -1,0 +1,21 @@
+{
+  "name": "caption",
+  "version": "1.0.0",
+  "description": "Generate images with captions based on shotwell database",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha"
+  },
+  "author": "Michael Kleiber",
+  "license": "ISC",
+  "dependencies": {
+    "dot": "^1.1.2",
+    "moment": "^2.22.0",
+    "shelljs": "^0.8.1",
+    "sqlite3": "^4.0.0"
+  },
+  "devDependencies": {
+    "jshint": "^2.9.5",
+    "mocha": "^5.1.0"
+  }
+}
