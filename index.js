@@ -1,16 +1,153 @@
 var shell = require('shelljs');
 var fs = require('fs');
+var commandLineArgs = require('command-line-args')
 var PhotoTemplate = require('./phototemplate.js').PhotoTemplate;
-
-var p = {
-    path: '/home/michael/Auswahl/DSC_0191.JPG',
-    rectwidth: 25
-};
-var t = new PhotoTemplate(p);
-var svg = t.generateSvg();
+var SVG = require('./svg.js').SVG;
+var syncGetPhotoList = require('./dbaccess').syncGetPhotoList;
 
 
-var exportSvgPath = './output/DSC_0191.svg';
-fs.writeFileSync(exportSvgPath, svg);
+var optionDefinitions = [
+    { name: 'list', alias: 'l', type: Boolean },
+    { name: 'photos', type: String},
+    { name: 'command', type: String}
+];  
+options = commandLineArgs(optionDefinitions);
+var photos = syncGetPhotoList();
 
-shell.exec('inkscape -d 100 -z '+ exportSvgPath + ' -e output/out.png');
+function mergeArraysUnique(arrayOne, arrayTwo)
+{
+    var ret = arrayOne;
+    arrayTwo.forEach(x => {
+        if (ret.indexOf(x) == -1)
+            ret.push(x);
+    });
+    return ret;
+}
+
+function getArrayFromRangeExpression(rangeExpr)
+{
+    var range = rangeExpr.split('-');
+    var rangeStart = range[0];
+    var rangeEnd = rangeStart;
+    if (range.length > 1)
+        rangeEnd = range[1];
+
+    var ret = [];
+    for (var i = parseInt(rangeStart); i <= parseInt(rangeEnd); ++i)
+    {
+        ret.push(i);
+    }
+    return ret;
+}
+
+function get_matching_photos(photoRange)
+{
+    var retList = [];
+    photoRange.split(';').forEach(rangeExpr => {
+        mergeArraysUnique(retList, getArrayFromRangeExpression(rangeExpr));
+    });
+    
+    var photoList = [];
+    retList.forEach(index => {
+        photoList.push(photos[index]);
+    });
+
+    return photoList;
+}
+
+
+function exportSvg(photo)
+{
+    photo.cacheAndCorrect();
+    var p = photo.getTemplateData();
+    
+    var t = new PhotoTemplate(p);
+    var s = new SVG(t.generateSvg());
+    var w = s.queryWidth('textid');
+    t.adaptCaptionRectangle(w);
+    var svg = t.generateSvg();
+    
+    photo.exportSvg(svg);
+}
+
+
+function convertSvg(photo)
+{
+    var exportPngPath = photo.getOutputPngPath();
+    shell.exec('inkscape -d 300 -z '+ photo.getTempSvgPath() + ' -e ' + exportPngPath);
+    var exportJpgPath = photo.getOutputJpgPath();
+    shell.exec('convert ' + exportPngPath + ' ' + exportJpgPath);
+    shell.rm(exportPngPath);
+}
+
+
+function get_action()
+{
+    if (options.command == 'info')
+    {
+        return function(p) {
+            console.info(JSON.stringify(p.getTemplateData()));
+        };
+    }
+    if (options.command == 'cache')
+    {
+        return function(p) {
+            p.cacheAndCorrect();
+        };
+    }
+    if (options.command == 'svg')
+    {
+        return exportSvg;
+    }
+    if (options.command == 'convert')
+    {
+        return convertSvg;
+    }
+    if (options.command == 'all')
+    {
+        return function(p) {
+            p.cacheAndCorrect();
+            exportSvg(p);
+            convertSvg(p);
+        };
+    }
+
+    throw "Command not found: '" + options.command + "'";
+}
+
+
+if (options.photos)
+{
+    var action = get_action();
+
+    get_matching_photos(options.photos).forEach(p => {
+        action(p);
+    });
+}
+
+
+
+if (options.list)
+{
+    var sizes = [];
+    var sizesString = [];
+    var numPerSize = {};
+    photos.forEach((photo, index) => {
+        var s = photo.getSize();
+        var ss = JSON.stringify(s);
+        console.log(index+':'+JSON.stringify(photo.getTemplateData()));
+        if (sizesString.indexOf(ss) == -1)
+        {
+            sizes.push(s);
+            sizesString.push(ss);
+        }
+        numPerSize[ss] = numPerSize.hasOwnProperty(ss) ? numPerSize[ss]+1 : 1;
+    });
+
+    sizesString.forEach(s => {
+        console.log('S:'+s);
+    });
+
+    console.log(JSON.stringify(numPerSize));
+}
+

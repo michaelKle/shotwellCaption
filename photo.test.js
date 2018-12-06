@@ -14,7 +14,7 @@ describe('Photo Tests', function() {
 	it('returns caption with timestamp in human form', function(done) {
         var p = new Photo({exposure_time: 1372510868});
 
-		assert.equal(p.getCaptionText(), '29. Juni 2013:');
+		assert.equal(p.getCaptionText(), '29. Juni 2013');
 		done();
 	});
 
@@ -25,30 +25,46 @@ describe('Photo Tests', function() {
 		done();
 	});
 
+	it('returns caption with timestamp and title', function(done) {
+        var p = new Photo({exposure_time: 1372510868, title: 'That is the thing.'});
+
+		assert.equal(p.getCaptionText(), '29. Juni 2013: That is the thing.');
+		done();
+	});
+
 	it('detects portrait orientation when not exif rotated', function(done) {
         var p = new Photo({width: 2268, height: 4032, orientation: 1});
-		assert.equal(p.getOrientation(), 'P');
+		assert.equal(p.isRotatedOk(), true);
 
 		done();
 	});
 
 	it('detects portrait orientation when exif rotated', function(done) {
         var p = new Photo({width: 6000, height: 4000, orientation: 8});
-		assert.equal(p.getOrientation(), 'P');
+		assert.equal(p.isRotatedOk(), false);
 
 		done();
 	});
 
 	it('detects landscape orientation when exif not rotated', function(done) {
         var p = new Photo({width: 6000, height: 4000, orientation: 1});
-		assert.equal(p.getOrientation(), 'L');
+		assert.equal(p.isRotatedOk(), true);
 
 		done();
 	});
 
 	it('detects landscape orientation when exif rotated', function(done) {
         var p = new Photo({width: 4000, height: 6000, orientation: 8});
-		assert.equal(p.getOrientation(), 'L');
+		assert.equal(p.isRotatedOk(), false);
+
+		done();
+	});
+
+	it('small is detected from comment', function(done) {
+        var p = new Photo({comment: 'klein'});
+		assert.equal(p.isSmall(), true);
+		var p = new Photo({comment: ''});
+		assert.equal(p.isSmall(), false);
 
 		done();
 	});

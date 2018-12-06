@@ -6,38 +6,45 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   width="150mm"
-   height="100mm"
-   viewBox="0 0 150 100"
+   width="75px"
+   height="89px"
+   viewBox="0 0 75 89"
    version="1.1"
    id="svg8">
   <g
      id="layer1"
      transform="translate(0,0)">
+     <rect
+       id="rectBack"
+       width="75px"
+       height="89px"
+       x="0"
+       y="0"
+       style="fill:#ffffff;fill-opacity:1"/>
     <image
        y="0"
        x="0"
        id="image16"
        xlink:href="file://{{=it.path}}"
        preserveAspectRatio="none"
-       height="100"
-       width="150" />
+       height="{{=it.imgheight}}"
+       width="{{=it.imgwidth}}" />
     <rect
        id="rect8"
        width="{{=it.rectwidth}}"
-       height="5"
-       x="4"
-       y="1.25"
+       height="3.5"
+       x="{{=it.rectposx}}"
+       y="5.5"
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.25;stroke-opacity:1"
        rx="1"
        ry="1" />
     <text
        xml:space="preserve"
        x="5"
-       y="5"
-       id="text4502"><tspan
+       y="8"
+       id="textid"><tspan
          id="tspan4500"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.5px;font-family:'URW Palladio L';stroke-width:0.25">Das ist cool</tspan>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.5px;font-family:'Minion Pro';stroke-width:0.25">{{=it.caption}}</tspan>
     </text>
   </g>
 </svg>
