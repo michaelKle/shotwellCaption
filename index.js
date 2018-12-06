@@ -44,7 +44,7 @@ function getArrayFromRangeExpression(rangeExpr)
 function get_matching_photos(photoRange)
 {
     var retList = [];
-    photoRange.split(';').forEach(rangeExpr => {
+    photoRange.split(',').forEach(rangeExpr => {
         mergeArraysUnique(retList, getArrayFromRangeExpression(rangeExpr));
     });
     

@@ -33,6 +33,9 @@ function Photo(dbobject) {
         if (!dbobject_.hasOwnProperty('title'))
             return '';
 
+        if (typeof dbobject_.title != "String")
+            return '';
+
         return dbobject_.title;
     }
 
