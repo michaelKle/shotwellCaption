@@ -9,7 +9,8 @@ var syncGetPhotoList = require('./dbaccess').syncGetPhotoList;
 var optionDefinitions = [
     { name: 'list', alias: 'l', type: Boolean },
     { name: 'photos', type: String},
-    { name: 'command', type: String}
+    { name: 'command', type: String},
+    { name: 'force', type: Boolean}
 ];  
 options = commandLineArgs(optionDefinitions);
 var photos = syncGetPhotoList();
@@ -59,25 +60,39 @@ function get_matching_photos(photoRange)
 function exportSvg(photo)
 {
     photo.cacheAndCorrect();
-    var p = photo.getTemplateData();
+    if (fs.existsSync(photo.getTempSvgPath()) && !options.force)
+    {
+        console.log('Not exporting SVG ' + photo.getTempSvgPath() + " as it already exists" );
+    }
+    else
+    {
+        var p = photo.getTemplateData();
     
-    var t = new PhotoTemplate(p);
-    var s = new SVG(t.generateSvg());
-    var w = s.queryWidth('textid');
-    t.adaptCaptionRectangle(w);
-    var svg = t.generateSvg();
-    
-    photo.exportSvg(svg);
+        var t = new PhotoTemplate(p);
+        var s = new SVG(t.generateSvg());
+        var w = s.queryWidth('textid');
+        t.adaptCaptionRectangle(w);
+        var svg = t.generateSvg();
+        
+        photo.exportSvg(svg);
+    }
 }
 
 
 function convertSvg(photo)
 {
-    var exportPngPath = photo.getOutputPngPath();
-    shell.exec('inkscape -d 300 -z '+ photo.getTempSvgPath() + ' -e ' + exportPngPath);
-    var exportJpgPath = photo.getOutputJpgPath();
-    shell.exec('convert ' + exportPngPath + ' ' + exportJpgPath);
-    shell.rm(exportPngPath);
+    if (fs.existsSync(photo.getOutputJpgPath()) && !options.force)
+    {
+        console.log('Not convert SVG ' + photo.getOutputJpgPath() + " as it already exists" );
+    }
+    else
+    {
+        var exportPngPath = photo.getOutputPngPath();
+        shell.exec('inkscape -d 300 -z '+ photo.getTempSvgPath() + ' -e ' + exportPngPath);
+        var exportJpgPath = photo.getOutputJpgPath();
+        shell.exec('convert ' + exportPngPath + ' ' + exportJpgPath);
+        shell.rm(exportPngPath);
+    }
 }
 
 
