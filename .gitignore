@@ -1,0 +1,7 @@
+svgs/
+package-lock.json
+node_modules/
+.vscode/
+photo.db
+jpegs/
+cache/
