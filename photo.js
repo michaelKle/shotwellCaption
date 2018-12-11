@@ -33,7 +33,8 @@ function Photo(dbobject) {
         if (!dbobject_.hasOwnProperty('title'))
             return '';
 
-        if (typeof dbobject_.title != "String")
+        var t = typeof dbobject_.title;
+        if (t != "string")
             return '';
 
         return dbobject_.title;
@@ -101,7 +102,7 @@ function Photo(dbobject) {
     this.exportSvg = function(svg, forceExport)
     {
         var exportSvgPath = this.getTempSvgPath();
-        if (fs.existsSync(exportSvgPath))
+        if (fs.existsSync(exportSvgPath) && !forceExport)
         {
             console.log('NOT exporting as ' + exportSvgPath + ' exists');
         }
@@ -149,7 +150,8 @@ function Photo(dbobject) {
             imgwidth: dbobject_.width,
             imgheight: dbobject_.height,
             imgar: dbobject_.width /  dbobject_.height,
-            small: this.isSmall()
+            small: this.isSmall(),
+            id: dbobject_.id
         };
         if (photoData.cached)
         {

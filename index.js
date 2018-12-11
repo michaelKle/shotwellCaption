@@ -74,7 +74,7 @@ function exportSvg(photo)
         t.adaptCaptionRectangle(w);
         var svg = t.generateSvg();
         
-        photo.exportSvg(svg);
+        photo.exportSvg(svg, options.force);
     }
 }
 
@@ -88,7 +88,7 @@ function convertSvg(photo)
     else
     {
         var exportPngPath = photo.getOutputPngPath();
-        shell.exec('inkscape -d 300 -z '+ photo.getTempSvgPath() + ' -e ' + exportPngPath);
+        shell.exec('inkscape -d 900 -z '+ photo.getTempSvgPath() + ' -e ' + exportPngPath);
         var exportJpgPath = photo.getOutputJpgPath();
         shell.exec('convert ' + exportPngPath + ' ' + exportJpgPath);
         shell.rm(exportPngPath);
