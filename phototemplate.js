@@ -5,74 +5,95 @@ function PhotoTemplate(photo)
 {
     var photo_ = photo;
     var rectWidth_ = 50;
-    var rectPosition_ = 5;
     this.textMargin = 2;
+    this.textOffset = 5;
+    this.textRectOffsetX = 1.5;
+    this.textRectOffsetY = 2.5;
 
-    this.generateSvg = function()
+    this.getDataForPhoto = function(imgwidth, imgheight, small, captionPlacement)
     {
-        //onsole.log('Using rect width = ' + rectWidth_);
-        var templateFunc = dots.template_89_75;
-        var templatewidth = 89, templateheight = 89;
-        var imgwidth = templatewidth;
-        var imgheight = templatewidth;
-    
-        var ar = photo_.imgwidth / photo_.imgheight;
+        var ret = {
+            template: dots.template_89_75,
+            templateWidth: 89,
+            templateHeight: 89
+        }
+        
+        var ar = imgwidth / imgheight;
             
 
-        if (photo_.imgwidth < photo_.imgheight)
+        if (imgwidth < imgheight)
         {
             
-            if (photo.small)
+            if (small)
             {
-                templateFunc = dots.template_75_89;
-                templateheight = 89;
+                ret.template = dots.template_75_89;
+                ret.templateHeight = 89;
 
-                imgwidth = templateheight * ar;
-                imgheight  = templateheight;
+                ret.imgwidth = ret.templateHeight * ar;
+                ret.imgheight  = ret.templateHeight;
         
             }
             else
             {
-                templateFunc = dots.template_89_150;
-            templatewidth = 89;
+                ret.template = dots.template_89_150;
+                ret.templateWidth = 89;
             
-
-            imgwidth = templatewidth;
-            imgheight = templatewidth / ar;
+                ret.imgwidth = ret.templateWidth;
+                ret.imgheight = ret.templateWidth / ar;
 
             }
         }
         else
         {
-            if (photo.small)
+            if (small)
             {
-                templateFunc = dots.template_89_75;
-                templatewidth = 89;
+                ret.template = dots.template_89_75;
+                ret.templateWidth = 89;
 
-                imgwidth = templatewidth;
-                imgheight  = templatewidth / ar;
+                ret.imgwidth = ret.templateWidth;
+                ret.imgheight  = ret.templateWidth / ar;
         
             }
             else
             {
-                templateFunc = dots.template_150_89;
-                templateheight = 89;
+                ret.template = dots.template_150_89;
+                ret.templateHeight = 89;
 
-                imgwidth = templateheight * ar;
-                imgheight = templateheight;
+                ret.imgwidth = ret.templateHeight * ar;
+                ret.imgheight = ret.templateHeight;
             
             }
         }
-        //console.log('Photo : ' + photo_.width + '@' + photo_.height + ' ar=' + ar);
-        //console.log('Photo : ' + imgwidth + '@' + imgheight + ' ar=' + imgwidth/imgheight);
-            
-        return templateFunc({
+
+        ret.captionOffsetY = this.textOffset;
+        if (captionPlacement == 'bl' || captionPlacement == 'br')
+        {
+            ret.captionOffsetY = ret.imgheight -  2.5 - this.textOffset;
+        }
+
+        ret.captionOffsetX = this.textOffset;
+        if (captionPlacement == 'tr'|| captionPlacement == 'br')
+        {
+            ret.captionOffsetX = ret.imgwidth - rectWidth_ -  this.textOffset;
+        }
+
+        return ret;
+    };
+
+    this.generateSvg = function()
+    {
+        var data = this.getDataForPhoto(photo_.imgwidth, photo_.imgheight, photo_.small, photo_.captionPlacement);
+        
+        return data.template({
             path: photo_.path,
             rectwidth: rectWidth_,
-            rectposx: rectPosition_-this.textMargin,
+            rectposy: data.captionOffsetY,
+            textposy: data.captionOffsetY+this.textRectOffsetY,
+            rectposx: data.captionOffsetX,
+            textposx: data.captionOffsetX+this.textRectOffsetX,
             caption: photo_.caption,
-            imgwidth: imgwidth.toFixed(2),
-            imgheight: imgheight.toFixed(2)
+            imgwidth: data.imgwidth.toFixed(2),
+            imgheight: data.imgheight.toFixed(2)
         });
     };
     this.adaptCaptionRectangle = function(width)

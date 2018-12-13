@@ -4,6 +4,7 @@ var commandLineArgs = require('command-line-args')
 var PhotoTemplate = require('./phototemplate.js').PhotoTemplate;
 var SVG = require('./svg.js').SVG;
 var syncGetPhotoList = require('./dbaccess').syncGetPhotoList;
+var adaptation = require('./adaptation.js');
 
 
 var optionDefinitions = [
@@ -95,6 +96,29 @@ function convertSvg(photo)
     }
 }
 
+function adapt(photo)
+{
+    if (adaptation.rotation.indexOf(photo.index) != -1)
+    {
+        photo.adaptRotation();
+    }
+
+    if (adaptation.adaptation.bl.indexOf(photo.index) != -1)
+    {
+        photo.captionPlacement = 'bl';
+    }
+    if (adaptation.adaptation.tr.indexOf(photo.index) != -1)
+    {
+        photo.captionPlacement = 'tr';
+    }
+    if (adaptation.adaptation.br.indexOf(photo.index) != -1)
+    {
+        photo.captionPlacement = 'br';
+    }
+
+    return photo;
+}
+
 
 function get_action()
 {
@@ -136,7 +160,14 @@ if (options.photos)
     var action = get_action();
 
     get_matching_photos(options.photos).forEach(p => {
-        action(p);
+        if (adaptation.weg.indexOf(p.index) != -1)
+        {
+            console.info('Doing nothing for index ' + p.index + ' - to be deleted');
+        }
+        else
+        {
+            action(adapt(p));
+        }
     });
 }
 

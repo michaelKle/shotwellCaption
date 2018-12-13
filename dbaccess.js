@@ -27,6 +27,7 @@ function asyncGetPhotoList(callback)
             
             rows[i].index = i;
             var p = new Photo(rows[i]);
+            p.index = i;
             photos.push(p);
         }
         cb(null, photos);

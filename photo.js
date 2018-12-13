@@ -40,6 +40,16 @@ function Photo(dbobject) {
         return dbobject_.title;
     }
 
+    this.index = undefined;
+    this.captionPlacement = undefined;
+    this.adaptRotation = function()
+    {
+        var w = dbobject_.width;
+        var h = dbobject_.height;
+        dbobject_.width = h;
+        dbobject_.height = w;
+    };
+
     this.getExposureTime = function()
     {
         return dbobject_.exposure_time;
@@ -151,7 +161,8 @@ function Photo(dbobject) {
             imgheight: dbobject_.height,
             imgar: dbobject_.width /  dbobject_.height,
             small: this.isSmall(),
-            id: dbobject_.id
+            id: dbobject_.id,
+            captionPlacement: this.captionPlacement
         };
         if (photoData.cached)
         {

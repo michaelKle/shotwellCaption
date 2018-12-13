@@ -1,4 +1,6 @@
 svgs/
+photo.db-orig
+output/
 package-lock.json
 node_modules/
 .vscode/
