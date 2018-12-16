@@ -55,6 +55,12 @@ function Photo(dbobject) {
         return dbobject_.exposure_time;
     };
 
+    this.getFormattedIndex = function()
+    {
+        var s = "00" + index;
+        return s.substr(-3);
+    };
+
     this.getTempJpegPath = function()
     {
         var p = cacheDir + '/'+index+'-'+dbobject_.exposure_time + '.jpg';
@@ -68,13 +74,13 @@ function Photo(dbobject) {
 
     this.getOutputPngPath = function()
     {
-        return './output/'+index+'-'+dbobject_.exposure_time + '.png';
+        return './output/'+this.getFormattedIndex()+'-'+dbobject_.exposure_time + '.png';
     };
 
     this.getOutputJpgPath = function()
     {
         shell.mkdir('-p', './jpegs');
-        return './jpegs/'+index+'-'+dbobject_.exposure_time + '.jpg';
+        return './jpegs/'+this.getFormattedIndex()+'-'+dbobject_.exposure_time + '.jpg';
     };
 
     this.getCaptionText = function()

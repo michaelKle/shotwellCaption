@@ -1,4 +1,5 @@
 svgs/
+concat/
 photo.db-orig
 output/
 package-lock.json

@@ -90,7 +90,7 @@ function convertSvg(photo)
     {
         var exportPngPath = photo.getOutputPngPath();
         console.log('Export SVG to '+exportPngPath);
-        shell.exec('inkscape -d 900 -z '+ photo.getTempSvgPath() + ' -e ' + exportPngPath);
+        shell.exec('inkscape -d 1200 -z '+ photo.getTempSvgPath() + ' -e ' + exportPngPath);
         var exportJpgPath = photo.getOutputJpgPath();
         console.log('Export JPEG to '+exportJpgPath);
         shell.exec('convert ' + exportPngPath + ' ' + exportJpgPath);
